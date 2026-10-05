@@ -1,0 +1,10 @@
+{
+  "name": "flexi-credit-form-automation",
+  "version": "1.0.0",
+  "description": "Automated Humanized Form Filling System powered by Groq LPU and Tavily API with JWT Authentication",
+  "scripts": {
+    "server": "node server/src/index.js",
+    "client": "npm run dev --prefix client",
+    "dev": "node -e \"const { spawn } = require('child_process'); spawn('npm', ['run', 'server'], { stdio: 'inherit', shell: true }); spawn('npm', ['run', 'client'], { stdio: 'inherit', shell: true });\""
+  }
+}

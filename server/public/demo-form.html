@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FlexiCredit - Commercial Credit Application</title>
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --card: #111827;
+      --border: #1f2937;
+      --text: #f3f4f6;
+      --text-muted: #9ca3af;
+      --accent: #2563eb;
+      --accent-hover: #1d4ed8;
+      --radius: 8px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+    .form-container {
+      background-color: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      max-width: 720px;
+      width: 100%;
+      padding: 32px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    }
+    .badge {
+      display: inline-block;
+      background: rgba(37, 99, 235, 0.15);
+      color: #60a5fa;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      letter-spacing: 0.5px;
+    }
+    h1 { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
+    p.subtitle { color: var(--text-muted); font-size: 14px; margin-bottom: 24px; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+    .full-width { grid-column: span 2; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    label { font-size: 13px; font-weight: 600; color: #d1d5db; }
+    input, select, textarea {
+      background-color: #1f2937;
+      border: 1px solid #374151;
+      border-radius: 6px;
+      color: #fff;
+      padding: 10px 14px;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--accent);
+    }
+    textarea { resize: vertical; min-height: 90px; }
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 16px 0;
+    }
+    .checkbox-group input { width: 18px; height: 18px; cursor: pointer; }
+    button[type="submit"] {
+      background-color: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 12px 24px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      transition: background-color 0.2s;
+    }
+    button[type="submit"]:hover {
+      background-color: var(--accent-hover);
+    }
+    .success-alert {
+      display: none;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid #059669;
+      color: #34d399;
+      padding: 14px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <div class="badge">TEST APPLICATION FORM</div>
+    <h1>Commercial Working Capital & Credit Line</h1>
+    <p class="subtitle">Complete this application to evaluate your business for flexible financing options.</p>
+
+    <div id="success-banner" class="success-alert">
+      ✓ Application successfully submitted and recorded!
+    </div>
+
+    <form id="credit-app-form" onsubmit="handleSubmit(event)">
+      <div class="grid">
+        <div class="form-group">
+          <label for="company_name">Legal Company Name *</label>
+          <input type="text" id="company_name" name="company_name" placeholder="e.g. Acme Tech Solutions LLC" required>
+        </div>
+        <div class="form-group">
+          <label for="tax_ein">Federal Tax ID (EIN) *</label>
+          <input type="text" id="tax_ein" name="tax_ein" placeholder="XX-XXXXXXX" required>
+        </div>
+
+        <div class="form-group">
+          <label for="business_structure">Entity Type</label>
+          <select id="business_structure" name="business_structure">
+            <option value="LLC">Limited Liability Company (LLC)</option>
+            <option value="Corporation">C-Corporation / S-Corporation</option>
+            <option value="Partnership">Partnership</option>
+            <option value="Sole Proprietorship">Sole Proprietorship</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="annual_revenue">Annual Revenue ($) *</label>
+          <input type="text" id="annual_revenue" name="annual_revenue" placeholder="e.g. $1,250,000" required>
+        </div>
+
+        <div class="form-group">
+          <label for="first_name">Primary Applicant First Name *</label>
+          <input type="text" id="first_name" name="first_name" placeholder="First Name" required>
+        </div>
+        <div class="form-group">
+          <label for="last_name">Applicant Last Name *</label>
+          <input type="text" id="last_name" name="last_name" placeholder="Last Name" required>
+        </div>
+
+        <div class="form-group">
+          <label for="applicant_email">Business Email *</label>
+          <input type="email" id="applicant_email" name="applicant_email" placeholder="name@company.com" required>
+        </div>
+        <div class="form-group">
+          <label for="phone_number">Contact Phone *</label>
+          <input type="tel" id="phone_number" name="phone_number" placeholder="+1 (555) 000-0000" required>
+        </div>
+
+        <div class="form-group full-width">
+          <label for="street_address">Headquarters Street Address *</label>
+          <input type="text" id="street_address" name="street_address" placeholder="123 Corporate Blvd" required>
+        </div>
+
+        <div class="form-group">
+          <label for="city">City</label>
+          <input type="text" id="city" name="city" placeholder="City">
+        </div>
+        <div class="form-group">
+          <label for="state">State</label>
+          <input type="text" id="state" name="state" placeholder="State/Province">
+        </div>
+
+        <div class="form-group full-width">
+          <label for="capital_rationale">Intended Capital Use & Business Growth Strategy *</label>
+          <textarea id="capital_rationale" name="capital_rationale" placeholder="Describe the purpose of this facility and your expected timeline..." required></textarea>
+        </div>
+      </div>
+
+      <div class="checkbox-group">
+        <input type="checkbox" id="terms_consent" name="terms_consent" required>
+        <label for="terms_consent" style="font-weight: 400; font-size: 13px;">
+          I certify that all details provided are accurate and authorized by executive officers.
+        </label>
+      </div>
+
+      <button type="submit" id="submit_application">Submit Application</button>
+    </form>
+  </div>
+
+  <script>
+    function handleSubmit(e) {
+      e.preventDefault();
+      document.getElementById('success-banner').style.display = 'block';
+      document.getElementById('credit-app-form').scrollIntoView({ behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>
