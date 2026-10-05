@@ -19,6 +19,17 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 // Static files for demo test form
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
+// Serve compiled React client in production
+const clientDistPath = path.join(__dirname, '..', '..', 'client', 'dist');
+const fs = require('fs');
+if (fs.existsSync(clientDistPath)) {
+  app.use(express.static(clientDistPath));
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api')) return next();
+    res.sendFile(path.join(clientDistPath, 'index.html'));
+  });
+}
+
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/forms', formRoutes);

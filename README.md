@@ -29,6 +29,27 @@ An enterprise-grade, automated form-filling system powered by **Groq LPU** (with
 
 ---
 
+## ☁️ Cloud Deployment on Render.com (100% Free)
+
+You can deploy this full-stack application directly from your GitHub repository to **Render.com**:
+
+### Method A: Blueprint / Docker (Recommended)
+1. Go to **[dashboard.render.com](https://dashboard.render.com/)** and sign in with GitHub.
+2. Click **New +** → **Web Service** (or **Blueprint**).
+3. Connect your repository: `https://github.com/parthdaware19/Flexi-credit-5th-Sem`.
+4. Render will auto-detect the `Dockerfile` and `render.yaml`.
+5. Under **Environment Variables**, add:
+   - `GROQ_API_KEY`: `gsk_...`
+   - `TAVILY_API_KEY`: `tvly-dev-...`
+   - `JWT_SECRET`: *(auto-generated or custom secure string)*
+6. Click **Deploy Web Service**! Your live app URL will be ready at `https://flexi-credit-xxxx.onrender.com`.
+
+### Method B: Native Node Web Service
+- **Build Command**: `npm run build`
+- **Start Command**: `npm run start`
+
+---
+
 ## 🚀 Quick Start
 
 ### 1. Prerequisites

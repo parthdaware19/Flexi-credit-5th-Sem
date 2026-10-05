@@ -5,6 +5,8 @@
   "scripts": {
     "server": "node server/src/index.js",
     "client": "npm run dev --prefix client",
-    "dev": "node -e \"const { spawn } = require('child_process'); spawn('npm', ['run', 'server'], { stdio: 'inherit', shell: true }); spawn('npm', ['run', 'client'], { stdio: 'inherit', shell: true });\""
+    "dev": "node -e \"const { spawn } = require('child_process'); spawn('npm', ['run', 'server'], { stdio: 'inherit', shell: true }); spawn('npm', ['run', 'client'], { stdio: 'inherit', shell: true });\"",
+    "build": "npm install --prefix server && cd server && npx playwright install --with-deps chromium && cd .. && npm install --prefix client && npm run build --prefix client",
+    "start": "node server/src/index.js"
   }
 }
