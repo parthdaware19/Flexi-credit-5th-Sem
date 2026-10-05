@@ -1,26 +1,29 @@
-FROM mcr.microsoft.com/playwright:v1.49.0-noble
+FROM node:22.12.0-bookworm
 
 WORKDIR /app
 
-ENV NODE_ENV=production
-
-# Copy root and package descriptors
-COPY package*.json ./
+# Copy package files
+COPY package.json ./
 COPY server/package*.json ./server/
 COPY client/package*.json ./client/
 
-# Install server and client dependencies
-RUN cd server && npm install --production=false
-RUN cd client && npm install
+# Install server dependencies
+RUN cd server && npm install
 
-# Copy application source code
+# Install client dependencies including Vite
+RUN cd client && npm install --include=dev
+
+# Copy application source
 COPY . .
 
-# Build React client bundle
+# Build React frontend
 RUN cd client && npm run build
 
-# Install Chromium browser binary for Playwright
-RUN cd server && npx playwright install chromium
+# Install Chromium for Playwright
+RUN cd server && npx playwright install --with-deps chromium
 
-# Start Express server (Render injects PORT dynamically)
+# Production environment
+ENV NODE_ENV=production
+
+# Start Express server
 CMD ["node", "server/src/index.js"]
