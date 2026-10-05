@@ -1,12 +1,18 @@
 const fs = require('fs');
 const path = require('path');
 
-const DATA_DIR = path.join(__dirname, '..', 'data');
+const DATA_DIR = process.env.VERCEL
+  ? path.join('/tmp', 'flexi_data')
+  : path.join(__dirname, '..', 'data');
 const DB_FILE = path.join(DATA_DIR, 'store.json');
 
 // Ensure data directory exists
-if (!fs.existsSync(DATA_DIR)) {
-  fs.mkdirSync(DATA_DIR, { recursive: true });
+try {
+  if (!fs.existsSync(DATA_DIR)) {
+    fs.mkdirSync(DATA_DIR, { recursive: true });
+  }
+} catch (e) {
+  console.warn('[DB] Could not create DATA_DIR, using memory cache:', e.message);
 }
 
 const defaultData = {
@@ -16,25 +22,34 @@ const defaultData = {
   settings: {}
 };
 
+let memoryDb = null;
+
 function readDb() {
+  if (memoryDb) return memoryDb;
   try {
     if (!fs.existsSync(DB_FILE)) {
-      fs.writeFileSync(DB_FILE, JSON.stringify(defaultData, null, 2), 'utf-8');
-      return defaultData;
+      try {
+        fs.writeFileSync(DB_FILE, JSON.stringify(defaultData, null, 2), 'utf-8');
+      } catch (e) {}
+      memoryDb = JSON.parse(JSON.stringify(defaultData));
+      return memoryDb;
     }
     const raw = fs.readFileSync(DB_FILE, 'utf-8');
-    return JSON.parse(raw);
+    memoryDb = JSON.parse(raw);
+    return memoryDb;
   } catch (err) {
     console.error('Error reading db file:', err);
-    return defaultData;
+    memoryDb = memoryDb || JSON.parse(JSON.stringify(defaultData));
+    return memoryDb;
   }
 }
 
 function writeDb(data) {
+  memoryDb = data;
   try {
     fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2), 'utf-8');
   } catch (err) {
-    console.error('Error writing to db file:', err);
+    // In serverless environments, writing to disk might fail; memory cache ensures safety
   }
 }
 

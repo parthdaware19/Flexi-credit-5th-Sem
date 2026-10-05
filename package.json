@@ -6,7 +6,18 @@
     "server": "node server/src/index.js",
     "client": "npm run dev --prefix client",
     "dev": "node -e \"const { spawn } = require('child_process'); spawn('npm', ['run', 'server'], { stdio: 'inherit', shell: true }); spawn('npm', ['run', 'client'], { stdio: 'inherit', shell: true });\"",
-    "build": "npm install --prefix server && cd server && npx playwright install --with-deps chromium && cd .. && npm install --prefix client && npm run build --prefix client",
+    "build": "cd client && npm install && npm run build",
     "start": "node server/src/index.js"
+  },
+  "dependencies": {
+    "axios": "^1.20.0",
+    "bcryptjs": "^3.0.3",
+    "cheerio": "^1.2.0",
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.5",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "multer": "^2.4.0",
+    "pdf-parse": "^2.4.5"
   }
 }

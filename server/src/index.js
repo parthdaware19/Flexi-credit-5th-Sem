@@ -54,9 +54,15 @@ for (const p of possibleDistPaths) {
 if (activeDistPath) {
   console.log(`[Static] Serving React client from: ${activeDistPath}`);
   app.use(express.static(activeDistPath));
-  app.get('*', (req, res, next) => {
-    if (req.path.startsWith('/api')) return next();
-    res.sendFile(path.join(activeDistPath, 'index.html'));
+  // Express 5 compatible SPA fallback
+  app.use((req, res, next) => {
+    if (req.method === 'GET' && !req.path.startsWith('/api')) {
+      const indexPath = path.join(activeDistPath, 'index.html');
+      if (fs.existsSync(indexPath)) {
+        return res.sendFile(indexPath);
+      }
+    }
+    next();
   });
 } else {
   console.warn('[Static] No compiled client/dist found. API mode only.');
@@ -93,12 +99,16 @@ async function seedDefaultUser() {
 
 seedDefaultUser();
 
-// Start Server - explicitly listen on 0.0.0.0 for Docker & Render cloud compatibility
+// Start Server - explicitly listen on 0.0.0.0 for standalone / Docker / Render, export for Vercel
 const PORT = process.env.PORT || config.PORT || 5000;
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`=======================================================`);
-  console.log(`🚀 FlexiCredit Automated Form Engine Server`);
-  console.log(`📡 Listening on 0.0.0.0:${PORT}`);
-  console.log(`📄 Built-in Demo Form: http://localhost:${PORT}/demo-form.html`);
-  console.log(`=======================================================`);
-});
+if (!process.env.VERCEL) {
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`=======================================================`);
+    console.log(`🚀 FlexiCredit Automated Form Engine Server`);
+    console.log(`📡 Listening on 0.0.0.0:${PORT}`);
+    console.log(`📄 Built-in Demo Form: http://localhost:${PORT}/demo-form.html`);
+    console.log(`=======================================================`);
+  });
+}
+
+module.exports = app;
