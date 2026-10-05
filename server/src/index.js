@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs');
 const bcrypt = require('bcryptjs');
 const config = require('./config');
 const db = require('./db');
@@ -13,29 +14,18 @@ const app = express();
 
 // Middleware
 app.use(cors());
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(express.json({ limit: '15mb' }));
+app.use(express.urlencoded({ extended: true, limit: '15mb' }));
 
 // Static files for demo test form
 app.use(express.static(path.join(__dirname, '..', 'public')));
-
-// Serve compiled React client in production
-const clientDistPath = path.join(__dirname, '..', '..', 'client', 'dist');
-const fs = require('fs');
-if (fs.existsSync(clientDistPath)) {
-  app.use(express.static(clientDistPath));
-  app.get('*', (req, res, next) => {
-    if (req.path.startsWith('/api')) return next();
-    res.sendFile(path.join(clientDistPath, 'index.html'));
-  });
-}
 
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/forms', formRoutes);
 app.use('/api/profile', profileRoutes);
 
-// Health check
+// Health check endpoint
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'healthy',
@@ -45,6 +35,44 @@ app.get('/api/health', (req, res) => {
     tavilyConfigured: !!config.TAVILY_API_KEY
   });
 });
+
+// Serve compiled React client in production
+const possibleDistPaths = [
+  path.join(__dirname, '..', '..', 'client', 'dist'),
+  path.join(process.cwd(), 'client', 'dist'),
+  path.join(__dirname, '..', 'dist')
+];
+
+let activeDistPath = null;
+for (const p of possibleDistPaths) {
+  if (fs.existsSync(p)) {
+    activeDistPath = p;
+    break;
+  }
+}
+
+if (activeDistPath) {
+  console.log(`[Static] Serving React client from: ${activeDistPath}`);
+  app.use(express.static(activeDistPath));
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api')) return next();
+    res.sendFile(path.join(activeDistPath, 'index.html'));
+  });
+} else {
+  console.warn('[Static] No compiled client/dist found. API mode only.');
+  app.get('/', (req, res) => {
+    res.send(`
+      <html>
+        <body style="font-family: sans-serif; background: #0b0f19; color: #fff; padding: 40px; text-align: center;">
+          <h2>FlexiCredit API Server is Running</h2>
+          <p>Please compile the frontend or run via Vite dev server.</p>
+          <a href="/api/health" style="color: #3b82f6;">Check Health</a> | 
+          <a href="/demo-form.html" style="color: #3b82f6;">Test Demo Form</a>
+        </body>
+      </html>
+    `);
+  });
+}
 
 // Seed default demo user if no users exist
 async function seedDefaultUser() {
@@ -65,11 +93,12 @@ async function seedDefaultUser() {
 
 seedDefaultUser();
 
-// Start Server
-app.listen(config.PORT, () => {
+// Start Server - explicitly listen on 0.0.0.0 for Docker & Render cloud compatibility
+const PORT = process.env.PORT || config.PORT || 5000;
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`=======================================================`);
   console.log(`🚀 FlexiCredit Automated Form Engine Server`);
-  console.log(`📡 Running on http://localhost:${config.PORT}`);
-  console.log(`📄 Built-in Demo Form: http://localhost:${config.PORT}/demo-form.html`);
+  console.log(`📡 Listening on 0.0.0.0:${PORT}`);
+  console.log(`📄 Built-in Demo Form: http://localhost:${PORT}/demo-form.html`);
   console.log(`=======================================================`);
 });

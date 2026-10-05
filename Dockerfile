@@ -2,9 +2,7 @@ FROM mcr.microsoft.com/playwright:v1.49.0-noble
 
 WORKDIR /app
 
-# Set production environment
 ENV NODE_ENV=production
-ENV PORT=5000
 
 # Copy root and package descriptors
 COPY package*.json ./
@@ -24,7 +22,5 @@ RUN cd client && npm run build
 # Install Chromium browser binary for Playwright
 RUN cd server && npx playwright install chromium
 
-EXPOSE 5000
-
-# Start Express server (which also serves React SPA in production)
+# Start Express server (Render injects PORT dynamically)
 CMD ["node", "server/src/index.js"]
